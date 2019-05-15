@@ -29,29 +29,34 @@ pair<int, int> findCheese(int **mazePtr)
 	return{ -1,-1 };
 }
 
-void allValidMovements( int **mazePtr, const vector<pair<int,int>> &totalMoves, list<pair<int,int>> &validMoves, int &X, int &Y)
+void allValidMovements( int **mazePtr, const vector<pair<int,int>> &totalMoves, vector<pair<int,int>> &validMoves, int &X, int &Y)
 {
-	if (X + totalMoves[0].first >= 0 && mazePtr[X + totalMoves[0].first][Y] == 1)
-		validMoves.push_back({ X + totalMoves[0].first, Y + totalMoves[0].second });
+	if (X != rowSize -1)
+	{
+		if (X + totalMoves[0].first >= 0 && mazePtr[X + totalMoves[0].first][Y] == 1 || 5)
+			validMoves.push_back({ X + totalMoves[0].first, Y + totalMoves[0].second });
 
-	if (X + totalMoves[1].first <= rowSize && mazePtr[X + totalMoves[1].first][Y] == 1)
-		validMoves.push_back({ X + totalMoves[1].first, Y + totalMoves[1].second });
+		if (X + totalMoves[1].first <= rowSize && mazePtr[X + totalMoves[1].first][Y] == 1 || 5)
+			validMoves.push_back({ X + totalMoves[1].first, Y + totalMoves[1].second });
+	}
+	if (Y != columnSize -1)
+	{
+		if (Y + totalMoves[2].second >= 0 && mazePtr[X][Y + totalMoves[2].second] == 1 || 5)
+			validMoves.push_back({ X + totalMoves[2].first, Y + totalMoves[2].second });
 
-	if (Y + totalMoves[2].second >= 0 && mazePtr[X][Y + totalMoves[2].second] == 1)
-		validMoves.push_back({ X + totalMoves[2].first, Y + totalMoves[2].second });
-
-	if (Y + totalMoves[3].second <= columnSize && mazePtr[X][Y + totalMoves[3].second] == 1)
-		validMoves.push_back({ X + totalMoves[3].first, Y + totalMoves[3].second });	
+		if (Y + totalMoves[3].second <= columnSize && mazePtr[X][Y + totalMoves[3].second] == 1 || 5)
+			validMoves.push_back({ X + totalMoves[3].first, Y + totalMoves[3].second });
+	}
 }
 
 int main()
 {
-	int X = 1, Y = 1;
+	int X = 0, Y = 0;
 	pair<int, int> cheeseLocation = {0, 0};
 	const vector<pair<int, int>> totalMoves = { {-1, 0}, {1, 0}, {0, -1}, {0, 1} };
-	list<pair<int, int>> validMoves;
+	vector<pair<int, int>> validMoves;
 	
-	list<pair<int,int>> visited;
+	vector<pair<int,int>> visited;
 	//intialize to starting position
 	visited.push_back({ 0, 0 });
 	pair<int, int> nextMove = {};
@@ -68,9 +73,28 @@ int main()
 	//find cheese location first
 	cheeseLocation = findCheese(mazePtr);
 	
-	
-	allValidMovements(mazePtr, totalMoves, validMoves, X, Y);	
+	int i = 1;
+	while (1)
+	{
+		allValidMovements(mazePtr, totalMoves, validMoves, X, Y);
+		int j = 0;
+		for(vector<pair<int,int>>::iterator iter = validMoves.begin(); iter < validMoves.end(); iter++)
+		{
+			nextMove = *iter;
+			if ((find(visited.begin(), visited.end(), nextMove) == visited.end()) && iter->first >= X && iter->second >= Y)
+			{
+				visited.push_back(nextMove);
+				X = visited[i].first;
+				Y = visited[i].second;
+			}
 		
+		}
+		validMoves.clear();
+		if (mazePtr[X][Y] == 5)
+			break;
+		i++;
+	}
+
 
 
 
